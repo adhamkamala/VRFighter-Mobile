@@ -7,7 +7,7 @@ using TMPro;
 public class NetworkManagerMobile : MonoBehaviourPunCallbacks
 {
     private const string RoomName = "Room1";
-    private const float JoinInterval = 5f;
+    private const float JoinInterval = 2f;
 
     private float joinTimer;
     public TextMeshProUGUI statusText;
@@ -67,7 +67,7 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room: " + PhotonNetwork.CurrentRoom.Name);
-        statusRoomText.text = "Joined Room...";
+        statusRoomText.text = "Joined Room";
         PhotonNetwork.RaiseEvent(1, null, RaiseEventOptions.Default, SendOptions.SendReliable);
     }
 }
