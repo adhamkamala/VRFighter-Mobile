@@ -48,6 +48,15 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
         }
     }
 
+    public void Reconnect()
+    {
+        if (PhotonNetwork.IsConnected)
+        {
+            PhotonNetwork.Disconnect();
+            statusText.text = "Disconnected from Photon server.";
+        }
+    }
+
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
