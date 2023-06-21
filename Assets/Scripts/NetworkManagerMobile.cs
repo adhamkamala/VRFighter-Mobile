@@ -12,6 +12,7 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
     private float joinTimer;
     public TextMeshProUGUI statusText;
     public TextMeshProUGUI statusRoomText;
+    private int roomCreatorId;
 
     private void Start()
     {
@@ -26,6 +27,29 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
         {
             ConnectAndJoinRoom();
             joinTimer = JoinInterval;
+        }
+    }
+
+    private void CheckRoomAvailable()
+    {
+        if (PhotonNetwork.CurrentRoom != null)
+        {
+           // int roomCreatorId = PhotonNetwork.CurrentRoom.MasterClientId;
+            bool isRoomCreatorPresent = false;
+            foreach (Player player in PhotonNetwork.PlayerList)
+            {
+                    if (player.ActorNumber == roomCreatorId)
+                {
+                    isRoomCreatorPresent = true;
+                    break; // Found the room creator, exit the loop
+                }
+            }
+
+            if (!isRoomCreatorPresent)
+            {
+               Reconnect();
+            }
+  
         }
     }
 
@@ -45,6 +69,10 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
                 Debug.Log("Joining Room: " + RoomName);
                 statusRoomText.text = "Joining room...";
             }
+        }
+        if (PhotonNetwork.InRoom)
+        {
+            CheckRoomAvailable();
         }
     }
 
@@ -67,6 +95,7 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room: " + PhotonNetwork.CurrentRoom.Name);
+        roomCreatorId = PhotonNetwork.CurrentRoom.MasterClientId;
         statusRoomText.text = "Joined Room";
         PhotonNetwork.RaiseEvent(1, null, RaiseEventOptions.Default, SendOptions.SendReliable);
     }
