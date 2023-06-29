@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using TMPro;
+using System.Collections.Generic;
 
 public class NetworkManagerMobile : MonoBehaviourPunCallbacks
 {
@@ -34,11 +35,11 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom != null)
         {
-           // int roomCreatorId = PhotonNetwork.CurrentRoom.MasterClientId;
+            // int roomCreatorId = PhotonNetwork.CurrentRoom.MasterClientId;
             bool isRoomCreatorPresent = false;
             foreach (Player player in PhotonNetwork.PlayerList)
             {
-                    if (player.ActorNumber == roomCreatorId)
+                if (player.ActorNumber == roomCreatorId)
                 {
                     isRoomCreatorPresent = true;
                     break; // Found the room creator, exit the loop
@@ -47,9 +48,9 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
 
             if (!isRoomCreatorPresent)
             {
-               Reconnect();
+                Reconnect();
             }
-  
+
         }
     }
 
@@ -67,6 +68,7 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
             {
                 PhotonNetwork.JoinRoom(RoomName);
                 Debug.Log("Joining Room: " + RoomName);
+                CheckRoomAvailable();
                 statusRoomText.text = "Joining room...";
             }
         }
@@ -99,4 +101,20 @@ public class NetworkManagerMobile : MonoBehaviourPunCallbacks
         statusRoomText.text = "Joined Room";
         PhotonNetwork.RaiseEvent(1, null, RaiseEventOptions.Default, SendOptions.SendReliable);
     }
+
+    public override void OnRoomListUpdate(List<RoomInfo> roomList)
+    {
+        foreach (RoomInfo room in roomList)
+        {
+            Debug.Log("Room Name: " + room.Name);
+            Debug.Log("Player Count: " + room.PlayerCount);
+            Debug.Log("Max Players: " + room.MaxPlayers);
+        }
+    }
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        // Failed to join the room, handle the failure
+        Debug.LogError("Failed to join room: " + message);
+    }
+
 }
